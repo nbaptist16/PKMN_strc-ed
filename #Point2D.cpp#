@@ -1,0 +1,60 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+
+#include "Vector2D.h"
+#include "Point2D.h"
+
+using namespace std;
+
+Point2D::Point2D()
+{
+  x = 0.0;
+  y = 0.0;
+}
+
+Point2D::Point2D(double in_x, double in_y)
+{
+  x = in_x;
+  y = in_y;
+}
+
+///
+
+double GetDistanceBetween(Point2D p1, Point2D p2)
+{
+  //double distance = sqrt(((p1.x - p2.x)^2)+((p1.y-p2.y)^2));
+  double distance = sqrt(((p1.x - p2.x)*(p1.x - p2.x))+((p1.y-p2.y)*(p1.x - p2.x)));
+  return distance;
+}
+
+ostream& operator << (ostream& out, Point2D p1)
+{
+  out << "(" << p1.x << ", " << p1.y << ")";
+  return out;
+}
+
+Point2D operator + (Point2D p1, Vector2D v1)
+{
+  Point2D newptA;
+  newptA.x = p1.x + v1.x;
+  newptA.y = p1.y + v1.y;
+  return newptA;
+}
+
+Vector2D operator - (Point2D p1, Point2D p2)
+{
+  Vector2D newvtS;
+  newvtS.x = p1.x - p2.x;
+  newvtS.y = p1.y - p2.y;
+  return newvtS;
+}
+:q
+:q
+q
+exit
+exit
+
+
+
+
