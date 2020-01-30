@@ -1,50 +1,27 @@
 #include <iostream>
-#include <string>
-#include <cmath>
-
+#include <math.h>
+#include "Vector2D.h"
 using namespace std;
 
-#include "Vector2D.h"
-
-Vector2D::Vector2D()
-{
-  x = 0.0;
-  y = 0.0;
+Vector2D::Vector2D() {
+    x = 0.0;
+    y = 0.0;
 }
 
-Vector2D::Vector2D(double in_x, double in_y)
-{
-  x = in_x;
-  y = in_y;
+Vector2D::Vector2D(double in_x, double in_y) {
+    x = in_x;
+    y = in_y;
 }
 
-///
-Vector2D operator * (Vector2D v1, double d)
-{
-  Vector2D newvtM;
-  newvtM.x = v1.x*d;
-  newvtM.y = v1.y*d;
-  return newvtM;
+Vector2D operator * (Vector2D v1, double d) {
+    return Vector2D(v1.x * d, v1.y * d);
 }
 
-Vector2D operator / (Vector2D v1, double d)
-{
-  Vector2D newvtD;
-  if (d == 0)
-    {
-      newvtD.x = v1.x;
-      newvtD.y = v1.y;
-    }
-  else
-    {
-      newvtD.x = v1.x/d;
-      newvtD.y = v1.y/d;
-    }
-  return newvtD;
+Vector2D operator / (Vector2D v1, double d) {
+    return Vector2D(v1.x / d, v1.y / d);
 }
 
-ostream& operator << (ostream& out, Vector2D v1)
-{
-  out << "<" << v1.x << ", " << v1.y << ">";
-  return out;
+ostream& operator << (ostream& out, Vector2D v1) {
+    out << "<" << v1.x << "," << v1.y << ">";
+    return out;
 }

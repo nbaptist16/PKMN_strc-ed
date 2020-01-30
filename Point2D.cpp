@@ -1,51 +1,48 @@
 #include <iostream>
-#include <string>
 #include <cmath>
-
-#include "Vector2D.h"
 #include "Point2D.h"
-
+#include "Vector2D.h"
 using namespace std;
 
-Point2D::Point2D()
-{
-  x = 0.0;
-  y = 0.0;
+//default constructor
+Point2D::Point2D() {
+    x = 0.0;
+    y = 0.0;
 }
 
-Point2D::Point2D(double in_x, double in_y)
-{
-  x = in_x;
-  y = in_y;
+Point2D::Point2D(double inputx, double inputy) {
+    x = inputx;
+    y = inputy;
 }
 
-///
-
-double GetDistanceBetween(Point2D p1, Point2D p2)
-{
-  //double distance = sqrt(((p1.x - p2.x)^2)+((p1.y-p2.y)^2));
-  double distance = sqrt(((p1.x - p2.x)*(p1.x - p2.x))+((p1.y-p2.y)*(p1.x - p2.x)));
-  return distance;
+//calculates distance between two point2ds
+double GetDistanceBetween(Point2D p1, Point2D p2) {
+    return sqrt(pow(p1.x-p2.x,2.0)+pow(p1.y-p2.y,2.0));
 }
 
-ostream& operator << (ostream& out, Point2D p1)
-{
-  out << "(" << p1.x << ", " << p1.y << ")";
-  return out;
+//NOT Required in program document
+bool operator == (Point2D p1, Point2D p2){
+	if (p1.x == p2.x && p1.y == p2.y){
+		return true;
+	}
+	return false;
+
 }
 
-Point2D operator + (Point2D p1, Vector2D v1)
-{
-  Point2D newptA;
-  newptA.x = p1.x + v1.x;
-  newptA.y = p1.y + v1.y;
-  return newptA;
+//OLD ARTIFACT - DON'T USE
+/*Point2D operator + (Point2D p1, Point2D p2) {
+    return Point2D(p1.x + p2.x, p1.y + p2.y);
+}*/
+
+Vector2D operator - (Point2D p1, Point2D p2) {
+    return Vector2D(p1.x - p2.x, p1.y - p2.y);
 }
 
-Vector2D operator - (Point2D p1, Point2D p2)
-{
-  Vector2D newvtS;
-  newvtS.x = p1.x - p2.x;
-  newvtS.y = p1.y - p2.y;
-  return newvtS;
+Point2D operator + (Point2D p1, Vector2D p2) {
+    return Point2D(p1.x + p2.x, p1.y + p2.y);
+}
+
+ostream& operator << (ostream& out, Point2D p1) {
+    out << "(" << p1.x << "," << p1.y << ")";
+    return out;
 }

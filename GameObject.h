@@ -1,38 +1,28 @@
-#ifndef GAMEOBJECT_H
-#define GAMEOBJECT_H
+#ifndef GAME_OBJECT_H
+#define GAME_OBJECT_H
+#include "Point2D.h"
 
-#include <iostream> //
-#include "Point2D.h" //
-#include "Vector2D.h"
-
-using namespace std;
-
-class GameObject
-{
-protected:
-  Point2D location;
-  int id_num;
-  char display_code;
-  char state;
-
+class GameObject {
 public:
-  GameObject();
-  GameObject(char in_code);
-  GameObject(Point2D in_loc, int in_id, char in_code);
-  Point2D GetLocation();
-  int GetId();
-  char GetState();
-  virtual void ShowStatus(); //changed to virtual
-  virtual ~GameObject();
-  //char GetDisplayCode();
+    GameObject();
+    GameObject(char in_code);
+    GameObject(Point2D in_loc, int in_id, char in_code);
+    virtual ~GameObject();
+    Point2D GetLocation();
+    int GetId();
+    virtual void ShowStatus();
+    void DrawSelf(char * ptr);
+    char GetState();
+    virtual bool Update() = 0;
+    virtual bool ShouldBeVisible() = 0;
 
-  //additional pure virtual functions for linking
-  virtual bool Update() = 0;
-  virtual bool ShouldBeVisible() = 0;
-
-  void DrawSelf(char * ptr);
+    //getters
+    char GetDisplayCode();
+    //string GetName();
+protected:
+    Point2D location;
+    char display_code;
+    char state;
+    int id_num;
 };
-
-
-
 #endif

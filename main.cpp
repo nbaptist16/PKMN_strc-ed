@@ -1,164 +1,257 @@
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <cstdlib>
-
-#include "GameObject.h"
 #include "Point2D.h"
-#include "Vector2D.h"
-
-#include "Building.h"
-#include "PokemonCenter.h"
-#include "PokemonGym.h"
-
-#include "Pokemon.h"
-
+#include "View.h"
 #include "Model.h"
 #include "GameCommand.h"
-
-#include "View.h"
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <ctime>
+#include <fstream>
 
 using namespace std;
 
-int main()
-{
-  cout << "EC327: Introduction to Software Engineering" << endl;
-  cout << "Fall 2019" << endl;
-  cout << "Programming Assignment 3" << endl;
+//Function prototypes
+bool IsNumber(string s);
+bool IsWhiteSpace(string s);
 
-  cout << "                   _                              " << endl;
-  cout << "       _ __   ___ | | _____ _ __ ___   ___  _ ___  " << endl;
-  cout << "      | |_ \\ / _ \\| |/ / _ \\ |_ ` _ \\ / _ \\| |_  \\ " << endl;
-  cout << "      | |_) | (_) |   <  __/ | | | | | (_) | | | |" << endl;
-  cout << "      | .__/ \\___/|_|\\_\\___|_| |_| |_|\\___/|_| |_|" << endl;
-  cout << "      |_|                                         " << endl;
-  /*
-  cout << "                   _                              " << endl;
-  cout << "       _ __   ___ | | _____ _ __ ___   ___  _ __  " << endl;
-  cout << "      | |_ \ / _ \| |/ / _ \ |_ ` _ \ / _ \| |_ \ " << endl;
-  cout << "      | |_) | (_) |   <  __/ | | | | | (_) | | | |" << endl;
-  cout << "      | .__/ \___/|_|\_\___|_| |_| |_|\___/|_| |_|" << endl;
-  cout << "      |_|                                         " << endl;
-  */
-  cout << "coded with <3 by your neighborhood stovetop rice cooker" << endl;
-  cout << endl;
+const string POKEMON_BANNER = "                                  ,'\\\n"
+                              "    _.----.        ____         ,'  _\\   ___    ___     ____\n"
+                              "_,-'       `.     |    |  /`.   \\,-'    |   \\  /   |   |    \\  |`.\n"
+                              "\\      __    \\    '-.  | /   `.  ___    |    \\/    |   '-.   \\ |  |\n"
+                              " \\.    \\ \\   |  __  |  |/    ,','_  `.  |          | __  |    \\|  |\n"
+                              "   \\    \\/   /,' _`.|      ,' / / / /   |          ,' _`.|     |  |\n"
+                              "    \\     ,-'/  /   \\    ,'   | \\/ / ,`.|         /  /   \\  |     |\n"
+                              "     \\    \\ |   \\_/  |   `-.  \\    `'  /|  |    ||   \\_/  | |\\    |\n"
+                              "      \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   |\n"
+                              "       \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   |\n"
+                              "        \\_.-'       |__|    `-._ |              '-.|     '-.| |   |\n"
+  "                                `'                            '-._|";
 
-  Model model;
-  View view;
+// TODO: Add help menu
+int main(int argc, char** argv) {
+    // Welcome Message
+    cout << "EC327: Introduction to Software Engineering" << endl;
+    cout << "Fall 2019" << endl;
+    cout << "Programming Assignment 3" << endl;
+    cout << POKEMON_BANNER << endl;
+    
+    cout << "coded with <3 by your neighborhood stovetop rice cooker" << endl;
+    cout << endl;
+    //constructing the game model
+    Model game_model;
+    View game_view;
 
-  model.Display(view);
+    bool game_is_running = true;
 
-  char command;
-  int in1, in2, in3;
+    bool read_from_file = false;
+    game_model.ShowStatus();
+    game_model.Display(game_view);
+    ifstream input_file;
+    if (argc == 2) {
+        input_file.open(argv[1], ios_base::in);
+        if (!input_file.is_open()) {
+            cout << "Failed to open input file " << argv[1] << endl;
+            exit(EXIT_FAILURE);
+        }
+        read_from_file = true;
+        srand(0);
+    } else
+        srand(time(NULL));
 
-  //int idno;
-  //int x;
-  //int y;
-  cout << endl << "Please enter a command: ";
-  //cin >> command >> in1 >> in2 >> in3; og, get rid of cin in switch
-  cin >> command;
+    while (game_is_running) {
+        cout << "Enter command: ";
+        char command = 'a';
+        int id = 0;
+        int id1 = 0;
+        int id2 = 0;
+        bool error = false;
+        string input = "'";
+        double x = 0;
+        double y = 0;
+        unsigned int stamina_amount = 0;
+        unsigned int training_unit_amount = 0;
+        if (read_from_file) {
+            getline(input_file, input);
+        } else
+            getline(cin, input);
+        if (input.length() > 0 and !IsWhiteSpace(input)) {
+            istringstream iss(input);
+            vector<string> tokens;
+            copy(istream_iterator<string>(iss),
+                 istream_iterator<string>(),
+                 back_inserter<vector<string> >(tokens));
+            if (tokens[0].length() == 1)
+                command = tokens[0][0];
+            else
+                error = true;
+            switch (command) {
+                //moving a Pikachu to a location
+                case 'm':
+                    if (tokens.size() == 4) {
+                        id = atoi(tokens[1].c_str());
+                        x = atof(tokens[2].c_str());
+                        y = atof(tokens[3].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        Point2D moveTo = Point2D(x, y);
+                        DoMoveCommand(game_model, id, moveTo);
+                        game_model.Display(game_view);
+                    }
+                    break;
+                case 'c':
+                    if (tokens.size() == 3) {
+                        id = atoi(tokens[1].c_str());
+                        id2 = atoi(tokens[2].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoMoveToCenterCommand(game_model, id, id2);
+                        game_model.Display(game_view);
+                    }
+                    break;
+                case 'g':
+                    if (tokens.size() == 3) {
+                        id = atoi(tokens[1].c_str());
+                        id2 = atoi(tokens[2].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoMoveToGymCommand(game_model, id, id2);
+                        game_model.Display(game_view);
+                    }
+                    break;
+                case 'r':
+                    if (tokens.size() == 3) {
+                        id = atoi(tokens[1].c_str());
+                        stamina_amount = atoi(tokens[2].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoRecoverInCenterCommand(game_model, id, stamina_amount);
+                        game_model.Display(game_view);
+                    }
+                    break;
+                case 't':
+                    if (tokens.size() == 3) {
+                        id = atoi(tokens[1].c_str());
+                        training_unit_amount = atoi(tokens[2].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoTrainInGymCommand(game_model, id, training_unit_amount);
+                        game_model.Display(game_view);
+                    }
+                    break;
+                case 's':
+                    if (tokens.size() == 2) {
+                        id = atoi(tokens[1].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoStopCommand(game_model, id);
+                        game_model.Display(game_view);
+                    }
+                    break;
+                case 'v':
+                    if (tokens.size() == 1) {
+                        DoGoCommand(game_model, game_view);
+                    }
+                    else {
+                        error = true;
+                    }
+                    break;
+                //advance 5 time ticks or until next event
+                case 'x':
+                    if (tokens.size() == 1) {
+                        DoRunCommand(game_model, game_view);
+                    }
+                    else {
+                        error = true;
+                    }
+                    break;
+                //quit the program
+                case 'q':
+                    if (tokens.size() == 1) {
+                        cout << "Terminating program." << endl;
+                        game_is_running = false;
+                    }
+                    else {
+                        error = true;
+                    }
+                    break;
 
-  //cin >> command >> idno >> x >> y; this one works for m
-  //Point2D pt2d (x,y); for use with m
- 
-  while (command != 'q')
-    {
-      switch (command)
-	{
-	case 'm':
-	  {
-	    cin >> in1 >> in2 >> in3;
-	    int idp = in1;
-	    Point2D pt2d (in2,in3);
-	    if (model.GetPokemonPtr(idp)) //from @Model.cpp
-	      {
-		DoMoveCommand(model, idp, pt2d);
-		//cout << "Moving " << model.GetPokemonPtr(idp)->GetName() << " to " << pt2d << endl;
-	      }
-	    else
-	      cout << "Error: Please enter a valid command!" << endl;
-	    break;
-	  }
-	case 'g':
-	  {
-	    cin >> in1 >> in2;
-	    int idp = in1;
-	    int idg = in2;
-	    if (model.GetPokemonPtr(idp) && model.GetPokemonGymPtr(idg))
-	      DoMoveToGymCommand(model, idp, idg);
-	    else
-	      cout << "Error: Please enter a valid command!" << endl;
-	    break;
-	  }
-	case 'c':
-	  {
-	    cin >> in1 >> in2;
-	    int idp = in1;
-	    int idc = in2;
-	    if (model.GetPokemonPtr(idp) && model.GetPokemonCenterPtr(idc))
-	      DoMoveToCenterCommand(model, idp, idc);
-	    else
-	      cout << "Error: Please enter a valid command!" << endl;
-	    break;
-	  }
-	case 's':
-	  {
-	    cin >> in1;
-	    int idp = in1;
-	    if (model.GetPokemonPtr(idp))
-	      DoStopCommand(model, idp);
-	    else
-	      cout << "Error: Please enter a valid command!" << endl;
-	    break;
-	  }
-	case 'r':
-	  {
-	    cin >> in1 >> in2;
-	    int idp = in1;
-	    unsigned int pts = in2;
-	    if (model.GetPokemonPtr(idp)) //can also check if stampts valid
-	      DoRecoverInCenterCommand(model, idp, pts);
-	    else
-	      cout << "Error: Please enter a valid command!" << endl;
-	    break;
-	  }
-	case 't':
-	  {
-	    cin >> in1 >> in2;
-	    int idp = in1;
-	    unsigned int pts = in2;
-	    if (model.GetPokemonPtr(idp)) //can also check if traipts valid
-	      DoTrainInGymCommand(model, idp, pts);
-	    else
-	      cout << "Error: Please enter a valid command!" << endl;
-	    break;
-	  }
-	case 'v':
-	  {
-	    DoGoCommand(model, view);
-	    //cout << "Advancing one tick." << endl;
-	    break;
-	  }
-	case 'x':
-	  {
-	    DoRunCommand(model, view);
-	    //cout << "Advancing one tick" << endl;
-	    break;
-	  }
-	default:
-	  {
-	    cout << "Error: Please enter a valid command!" << endl;
-	    cout << "Please." << endl;
-	    cin >> command;
-	  }
-	}
-      
-      //cin >> command >> command >> x >> y; nope!
-      //cin >> command >> in1 >> in2 >> in3;
-      //Point2D pt2d (x,y); not anymore!
-      cout << endl << "Please enter a command: ";
-      cin >> command;
+		 //added cases b and a
+	        case 'b':
+		  if (tokens.size() == 3) {
+                        id = atoi(tokens[1].c_str());
+                        id2 = atoi(tokens[2].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoBattleCommand(game_model, id, id2);
+                        game_model.Display(game_view);
+                    }
+		  break;
+	        case 'a':
+		  if (tokens.size() == 3) {
+                        id = atoi(tokens[1].c_str());
+                        id2 = atoi(tokens[2].c_str());
+                    }
+                    else {
+                        error = true;
+                    }
+                    if (!error) {
+                        DoMoveToArenaCommand(game_model, id, id2);
+                        game_model.Display(game_view);
+                    }  
+		  break;
+                default:
+                    error = true;
+                    break;
+            }
+        }
+        else
+            error = true;
+        if (error)
+            cout << "ERROR: Please enter a valid command!" << endl;
     }
-  
-  return 0;
+    return 0;
 }
+
+bool IsNumber(string s){
+    for(int i = 0; i < s.length(); i++) {
+        if(!(s[i] >= '0' && s[i] <= '9')) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool IsWhiteSpace(string s) {
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] != ' ' && s[i] != '\t') {
+            return false;
+        }
+    }
+    return true;
+}
+

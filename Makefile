@@ -1,11 +1,11 @@
 CC=g++ -g
 
-OBJS=main.o Building.o Point2D.o Vector2D.o GameObject.o GameCommand.o PokemonCenter.o Model.o Pokemon.o PokemonGym.o View.o
+OBJS=main.o Building.o Point2D.o Vector2D.o GameObject.o GameCommand.o PokemonCenter.o Model.o Pokemon.o PokemonGym.o View.o Rival.o BattleArena.o
 
-default: PA3
+default: PA4
 
-PA3: $(OBJS)
-	$(CC) -o PA3 $(OBJS) 
+PA4: $(OBJS)
+	$(CC) -o PA4 $(OBJS) 
 
 Vector2D.o: Vector2D.cpp Vector2D.h
 	$(CC) -c Vector2D.cpp -o Vector2D.o 
@@ -13,33 +13,40 @@ Vector2D.o: Vector2D.cpp Vector2D.h
 Point2D.o: Point2D.cpp Point2D.h Vector2D.h
 	$(CC) -c Point2D.cpp -o Point2D.o 
 
-Building.o: Building.cpp Building.h Point2D.h GameObject.h
+Building.o: Building.cpp Building.h
 	$(CC) -c Building.cpp -o Building.o
 
 GameObject.o: GameObject.cpp GameObject.h Point2D.h Vector2D.h
 	$(CC) -c GameObject.cpp -o GameObject.o 
 
-PokemonCenter.o: PokemonCenter.cpp PokemonCenter.h GameObject.h Point2D.h Building.h
+PokemonCenter.o: PokemonCenter.cpp PokemonCenter.h GameObject.h Point2D.h
 	$(CC) -c PokemonCenter.cpp -o PokemonCenter.o
 
-Model.o: Model.cpp Model.h GameObject.h Pokemon.h PokemonGym.h PokemonCenter.h View.h Point2D.h Vector2D.h
+Model.o: Model.cpp Model.h GameObject.h Pokemon.h PokemonGym.h PokemonCenter.h View.h
 	$(CC) -c Model.cpp -o Model.o 
 
-PokemonGym.o: PokemonGym.cpp PokemonGym.h GameObject.h Point2D.h Building.h
+PokemonGym.o: PokemonGym.cpp PokemonGym.h GameObject.h Point2D.h
 	$(CC) -c PokemonGym.cpp -o PokemonGym.o
 
-View.o: View.cpp View.h GameObject.h Point2D.h GameCommand.h Model.h Pokemon.h PokemonGym.h PokemonCenter.h Vector2D.h
+View.o: View.cpp View.h GameObject.h Point2D.h
 	$(CC) -c View.cpp -o View.o 
 
 Pokemon.o: Pokemon.cpp Pokemon.h GameObject.h Point2D.h Vector2D.h PokemonGym.h PokemonCenter.h
 	$(CC) -c Pokemon.cpp -o Pokemon.o
 
-GameCommand.o: GameCommand.cpp GameCommand.h Model.h GameObject.h Pokemon.h PokemonGym.h PokemonCenter.h View.h Building.h Vector2D.h Point2D.h
+GameCommand.o: GameCommand.cpp GameCommand.h Model.h GameObject.h Pokemon.h PokemonGym.h PokemonCenter.h
 	$(CC) -c GameCommand.cpp -o GameCommand.o
+
+#added Rival n BattleArena
+Rival.o: Rival.cpp Rival.h
+	$(CC) -c Rival.cpp -o Rival.o
+
+BattleArena.o: BattleArena.cpp BattleArena.h
+	$(CC) -c BattleArena.cpp BattleArena.h
 
 main.o: main.cpp Building.h Point2D.h Vector2D.h GameCommand.h PokemonCenter.h Model.h Pokemon.h PokemonGym.h GameObject.h View.h
 	$(CC) -c main.cpp
 
 clean: 
-	rm $(OBJS) PA3
+	rm $(OBJS) PA4
 

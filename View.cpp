@@ -1,157 +1,76 @@
-#include <iostream>
-#include <string>
-
-//#include "Point2D.h"
-//#include "Vector2D.h"
-//#include "GameObject.h"
-//#include "PokemonCenter.h"
-//#include "PokemonGym.h"
-//#include "Pokemon.h"
-//#include "Model.h"
-//#include "GameCommand.h"
 #include "View.h"
+#include "Point2D.h"
+#include "GameObject.h"
+#include "Vector2D.h"
+#include <iostream>
 
-using namespace std;
-
-View::View():origin(0,0)
-{
-  size = 11;
-  scale = 2;
-  //origin.x = 0;
-  //origin.y = 0;
+View::View() {
+    size = 11;
+    scale = 2;
 }
 
-void View::Clear()
-{
-  for (int x = 0; x < size; x++)
-    {
-      for (int y = 0; y < size; y++)
-	{
-	  grid[x][y][0] = '.';
-	  grid [x][y][1] = ' ';
-	}
+bool View::GetSubscripts(int &out_x, int &out_y, Point2D location) {
+    Vector2D cv;
+    cv = (location - origin) / scale;
+    out_x = cv.x;
+    out_y = cv.y;
+    if (out_x >= 0 && out_x <= size - 1 && out_y >= 0 && out_y <= size - 1) {
+        return true;
     }
+    cout << "An object is outside the display" << endl;
+    return false;
 }
 
-void View::Plot(GameObject * ptr)
-{
-  int x = 0, y = 0;
-
-  bool check = GetSubscripts(x, y, ptr->GetLocation());
-  if (check == 0)
-    {
-      return; //no output for invalid input
-    }
-  else if (check == 1)
-    {
-      char marker[2];
-      //DrawSelf(GameObject * ptr);
-      ptr->DrawSelf(marker);
-      if (grid[x][y][0] == '.')
-	{
-	  grid[x][y][0] = *marker;
-	  grid[x][y][1] = *(marker + 1);
-	}
-      else
-	{
-	  grid[x][y][0] = '*';
-	  grid[x][y][1] = ' ';
-	}
+void View::Clear() {
+    for (int i = 0; i < VIEW_MAX_SIZE; i++) {
+        for (int j = 0; j < VIEW_MAX_SIZE; j++) {
+            grid[i][j][0] = '.';
+            grid[i][j][1] = ' ';
+        }
     }
 }
 
-///
-
-void View::Draw(){
-
-  bool sizeOdd = size %2 !=0;
-
-  for(int y = size - 1; y>-2; y--){
-
-    if(y==-1){
-
-      cout << "  ";
-
-      for(int scaleX = 0; scaleX < static_cast<int>((size-1) *scale)+3; scaleX += static_cast<int>(scale * 2))
-
-	if(scaleX < 10)
-
-	  cout << scaleX << "   ";
-
-        else
-
-	  cout << scaleX << "  ";
-
-      cout << endl;
-
-      break;
-
+void View::Plot(GameObject *ptr) {
+    int ix, iy;
+    bool valid;
+    valid = GetSubscripts(ix, iy, ptr->GetLocation());
+    if (valid && grid[ix][iy][0] == '.') {
+        ptr->DrawSelf(grid[ix][iy]);
     }
-
-    if(sizeOdd && y%2==0){
-
-      int scaler = static_cast<int>(y*scale);
-
-      cout << scaler;
-
-      if(scaler < 10)
-
-	 cout << " ";
-
-     }
-
-    else if(!sizeOdd && y%2==1){
-
-      int scaler = static_cast<int>(y*scale);
-
-      cout << scaler;
-
-      if(scaler < 10)
-
-	cout << " ";
-
+    else if (valid) {
+        grid[ix][iy][0] = '*';
+        grid[ix][iy][1] = ' ';
     }
+}
 
-      
-
-    else 
-
-      cout << "  ";
-
-    for(int x = 0; x < size; x++){
-
-      cout << grid[x][y][0];
-  
-      cout << grid[x][y][1];
-
+void View::Draw() {
+    for (int j = size-1; j >= -1; j--) {
+        for (int i = -1; i <= size-1; i++) {
+            //grid axis
+            if (i == -1 && j%2 == 0) {
+                cout << j*2;
+                if (j/5 == 0) {
+                    cout << " ";
+                }
+            }
+            else if (i == -1 && j%2 != 0) {
+                cout << "  ";
+            }
+            else if (j == -1 && i%2 == 0) {
+                cout << i*2;
+                if (i/5 == 0) {
+                    cout << " ";
+                }
+                cout << "  ";
+            }
+            //draw objects
+            if (i >= 0 && j >=0) {
+                cout << grid[i][j][0] << grid[i][j][1];
+            }
+        }
+        cout << endl;
     }
-
-    cout << endl;
-
-  }
-
 }
 
 
-/*
-void View::Draw()
-{
-  
-}
-*/
 
-//void View::DrawSelf >> in GameObject
-
-
-bool View::GetSubscripts(int &out_x, int &out_y, Point2D location)
-{
-  out_x = static_cast<int>((location.x - origin.x)/scale);
-  out_y = static_cast<int>((location.y - origin.y)/scale);
-
-  if(out_x < size && out_y < size && out_x >= 0 && out_y >= 0) //>=0 ??
-    {
-      return true;
-    }
-  cout << "An object is outside the display" << endl;
-  return false;
-}
